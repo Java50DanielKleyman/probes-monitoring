@@ -15,6 +15,6 @@ public class SensorRangeProviderClientServiceImpl implements SensorRangeProvider
 	@Override
 	public Range getSensorRange(long sensorId) {
 
-		return rangeRepo.findById(sensorId);
+		return rangeRepo.findById(sensorId).range();
 	}
 }
