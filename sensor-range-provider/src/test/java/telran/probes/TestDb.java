@@ -1,3 +1,4 @@
+package telran.probes;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;

@@ -1,13 +1,18 @@
+package telran.probes;
+
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import telran.probes.service.RangeRepo;
 import telran.probes.service.SensorRangeProviderClientService;
 import telran.probes.dto.Range;
+
 
 @SpringBootTest
 class SensorRangeProviderClientServiceTest {
@@ -26,7 +31,7 @@ class SensorRangeProviderClientServiceTest {
 	}
 
 	@Test
-	void test() {
+	void sensorRangeProviderClientServiceTest() {
 		Range res = sensorRangeProviderClientService.getSensorRange(SENSOR_ID);
 		assertEquals(RANGE, res);
 	}
