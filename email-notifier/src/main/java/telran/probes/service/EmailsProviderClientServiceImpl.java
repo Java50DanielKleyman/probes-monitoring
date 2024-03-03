@@ -2,9 +2,7 @@ package telran.probes.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,38 +11,29 @@ import org.springframework.web.client.RestTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.probes.dto.Range;
-import telran.probes.dto.SensorUpdateData;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RangeProviderClientServiceImpl implements RangeProviderClientService {
+public class EmailsProviderClientServiceImpl implements EmailsProviderClientService {
 	final RestTemplate restTemplate;
 	final ServiceConfiguration serviceConfiguration;
-	private final Map<Long, Range> mapRanges = new HashMap<>();
-	private static final Range RANGE_DEFAULT = new Range(MIN_DEFAULT_VALUE, MAX_DEFAULT_VALUE);
-
-	@Bean
-	Consumer<SensorUpdateData> updateRangeConsumer() {
-		return sensorUpdateData -> updateProcessing(sensorUpdateData);
-	}
+	private final Map<Long, String[]> mapEmails = new HashMap<>();
 
 	@Override
-	public Range getRange(long sensorId) {
-		Range range = mapRanges.get(sensorId);
-		if (range == null) {
-			range = serviceRequest(sensorId);
-			if (range != RANGE_DEFAULT) {
-				mapRanges.put(sensorId, range);
+	public String[] getMails(long sensorId) {
+		String[] emails = mapEmails.get(sensorId);
+		if (emails == null) {
+			emails = serviceRequest(sensorId);
+			if (emails != DEFAULT_EMAILS) {
+				mapEmails.put(sensorId, emails);
 			}
-
 		}
-
-		return range;
+		return emails;
 	}
 
-	private Range serviceRequest(long sensorId) {
-		Range range = null;
+	private String[] serviceRequest(long sensorId) {
+		String[] emails = null;
 		ResponseEntity<?> responseEntity;
 		try {
 			responseEntity = restTemplate.exchange(getUrl(sensorId), HttpMethod.GET, null, Range.class);
@@ -52,15 +41,14 @@ public class RangeProviderClientServiceImpl implements RangeProviderClientServic
 					|| responseEntity.getStatusCode().is5xxServerError()) {
 				throw new Exception(responseEntity.getBody().toString());
 			}
-			range = (Range) responseEntity.getBody();
-			log.debug("range value {}", range);
+			emails = (String[]) responseEntity.getBody();
+			log.debug("emails {}", (Object[]) emails);
 		} catch (Exception e) {
 			log.error("error at service request: {}", e.getMessage());
-			range = RANGE_DEFAULT;
-			log.warn("default range value: {}", range);
+			emails = DEFAULT_EMAILS;
+			log.warn("default emails: {}", (Object[]) emails);
 		}
-		return range;
-
+		return emails;
 	}
 
 	private String getUrl(long sensorId) {
@@ -69,11 +57,4 @@ public class RangeProviderClientServiceImpl implements RangeProviderClientServic
 		log.debug("url created is {}", url);
 		return url;
 	}
-
-	public void updateProcessing(SensorUpdateData sensorUpdateData) {
-		if (sensorUpdateData.range() != null) {
-			mapRanges.replace(sensorUpdateData.id(), sensorUpdateData.range());
-		}
-	}
-
 }

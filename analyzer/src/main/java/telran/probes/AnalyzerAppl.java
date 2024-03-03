@@ -28,14 +28,7 @@ public class AnalyzerAppl {
 	Consumer<ProbeData> analyzerConsumer() {
 		return probeData -> probeDataAnalyzing(probeData);
 	}
-	@Bean
-	Consumer<SensorUpdateData> updateRangeConsumer(){
-		return sensorUpdateData -> updateProcessing(sensorUpdateData);
-	}
-	private void updateProcessing(SensorUpdateData sensorUpdateData) {
-		clientService.updateSensorData(sensorUpdateData);
-		
-	}
+	
 	private void probeDataAnalyzing(ProbeData probeData) {
 		// in the case probeData value doesn't fall into a range received from RangeProviderClientService
 		// create a proper deviation and  streamBridge.send(producerBindingName, deviation);
