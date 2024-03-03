@@ -1,13 +1,11 @@
 package telran.probes.service;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +41,7 @@ public class RangeProviderClientServiceImpl implements RangeProviderClientServic
 		ResponseEntity<?> responseEntity;
 		try {
 			responseEntity = restTemplate.exchange(getUrl(sensorId), HttpMethod.GET, null, Range.class);
-			if (responseEntity.getStatusCode().is4xxClientError()) {
+			if (responseEntity.getStatusCode().is4xxClientError() || responseEntity.getStatusCode().is5xxServerError()) {
 				throw new Exception(responseEntity.getBody().toString());
 			}
 			range = (Range) responseEntity.getBody();
@@ -64,7 +62,7 @@ public class RangeProviderClientServiceImpl implements RangeProviderClientServic
 		return url;
 	}
 
-	@Override
+	
 	public void updateSensorData(SensorUpdateData sensorUpdateData) {
 		if (sensorUpdateData.range() != null) {
 			mapRanges.replace(sensorUpdateData.id(), sensorUpdateData.range());

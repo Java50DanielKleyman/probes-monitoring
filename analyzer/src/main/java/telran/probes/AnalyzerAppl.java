@@ -11,14 +11,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.probes.dto.*;
 
-import telran.probes.service.RangeProviderClientService;
+import telran.probes.service.RangeProviderClientServiceImpl;
 
 @SpringBootApplication
 @RequiredArgsConstructor
 @Slf4j
 public class AnalyzerAppl {
 	String producerBindingName = "analyzerProducer-out-0";
-	final RangeProviderClientService clientService;
+	final RangeProviderClientServiceImpl clientService;
 	final StreamBridge streamBridge;
 	public static void main(String[] args) {
 		SpringApplication.run(AnalyzerAppl.class, args);

@@ -1,7 +1,6 @@
 package telran.probes.service;
 
 import telran.probes.dto.Range;
-import telran.probes.dto.SensorUpdateData;
 
 public interface RangeProviderClientService {
 
@@ -10,5 +9,4 @@ public interface RangeProviderClientService {
 
 Range getRange(long sensorId);
 
-void updateSensorData(SensorUpdateData sensorUpdateData);
 }
