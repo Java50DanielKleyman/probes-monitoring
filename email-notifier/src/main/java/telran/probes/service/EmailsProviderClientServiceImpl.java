@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.probes.dto.Range;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class EmailsProviderClientServiceImpl implements EmailsProviderClientServ
 		String[] emails = null;
 		ResponseEntity<?> responseEntity;
 		try {
-			responseEntity = restTemplate.exchange(getUrl(sensorId), HttpMethod.GET, null, Range.class);
+			responseEntity = restTemplate.exchange(getUrl(sensorId), HttpMethod.GET, null, String[].class);
 			if (responseEntity.getStatusCode().is4xxClientError()
 					|| responseEntity.getStatusCode().is5xxServerError()) {
 				throw new Exception(responseEntity.getBody().toString());

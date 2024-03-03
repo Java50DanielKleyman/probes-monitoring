@@ -43,7 +43,6 @@ public class EmailNotifierServiceTest {
 	@Autowired
 	EmailsProviderClientService providerService;
 	@MockBean
-
 	RestTemplate restTemplate;
 
 	@Test
@@ -54,50 +53,50 @@ public class EmailNotifierServiceTest {
 		assertEquals(EMAILS, providerService.getMails(SENSOR_ID));
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	@Order(2)
-//	void normalFlowWithCache() {
-//		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(Class.class)))
-//		.thenAnswer(new Answer<ResponseEntity<?>>() {
-//			@Override
-//			public ResponseEntity<?> answer(InvocationOnMock invocation) throws Throwable {
-//				fail("method exchange should not be called");
-//				return null;
-//			}
-//		});
-//		assertEquals(EMAILS, providerService.getMails(SENSOR_ID));
-//	}
-//
-//	@Test
-//	@Order(3)
-//	void sensorNotFoundTest() {
-//		ResponseEntity<String> responseEntity = new ResponseEntity<>(SENSOR_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
-//		when(restTemplate.exchange(getUrl(SENSOR_ID_NOT_FOUND), HttpMethod.GET, null, String.class))
-//				.thenReturn(responseEntity);
-//		assertEquals(DEFAULT_EMAILS, providerService.getMails(SENSOR_ID_NOT_FOUND));
-//
-//	}
-//
-//	@Test
-//	@Order(4)
-//	void defaultRangeNotInCache() {
-//		ResponseEntity<String[]> responseEntity = new ResponseEntity<>(EMAILS, HttpStatus.OK);
-//		when(restTemplate.exchange(getUrl(SENSOR_ID_NOT_FOUND), HttpMethod.GET, null, String[].class))
-//				.thenReturn(responseEntity);
-//		assertEquals(EMAILS, providerService.getMails(SENSOR_ID_NOT_FOUND));
-//	}
-//
+	@SuppressWarnings("unchecked")
+	@Test
+	@Order(2)
+	void normalFlowWithCache() {
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(Class.class)))
+		.thenAnswer(new Answer<ResponseEntity<?>>() {
+			@Override
+			public ResponseEntity<?> answer(InvocationOnMock invocation) throws Throwable {
+				fail("method exchange should not be called");
+				return null;
+			}
+		});
+		assertEquals(EMAILS, providerService.getMails(SENSOR_ID));
+	}
+
+	@Test
+	@Order(3)
+	void sensorNotFoundTest() {
+		ResponseEntity<String> responseEntity = new ResponseEntity<>(SENSOR_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
+		when(restTemplate.exchange(getUrl(SENSOR_ID_NOT_FOUND), HttpMethod.GET, null, String.class))
+				.thenReturn(responseEntity);
+		assertEquals(DEFAULT_EMAILS, providerService.getMails(SENSOR_ID_NOT_FOUND));
+
+	}
+
+	@Test
+	@Order(4)
+	void defaultRangeNotInCache() {
+		ResponseEntity<String[]> responseEntity = new ResponseEntity<>(EMAILS, HttpStatus.OK);
+		when(restTemplate.exchange(getUrl(SENSOR_ID_NOT_FOUND), HttpMethod.GET, null, String[].class))
+				.thenReturn(responseEntity);
+		assertEquals(EMAILS, providerService.getMails(SENSOR_ID_NOT_FOUND));
+	}
+
 	private String getUrl(long sensorId) {
 
 		return URL + sensorId;
 	}
-//
-//	@SuppressWarnings("unchecked")
-//	@Test
-//	void remoteWebServiceUnavailable() {
-//		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(Class.class)))
-//		.thenThrow(new RestClientException("Internal Server Error"));
-//		assertEquals(DEFAULT_EMAILS, providerService.getMails(SENSOR_ID_UNAVAILABLE));
-//	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void remoteWebServiceUnavailable() {
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(Class.class)))
+		.thenThrow(new RestClientException("Internal Server Error"));
+		assertEquals(DEFAULT_EMAILS, providerService.getMails(SENSOR_ID_UNAVAILABLE));
+	}
 }
