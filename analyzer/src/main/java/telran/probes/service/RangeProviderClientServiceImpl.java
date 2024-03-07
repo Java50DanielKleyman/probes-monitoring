@@ -1,19 +1,19 @@
 package telran.probes.service;
 
+import java.net.URI;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.probes.dto.Range;
-import telran.probes.dto.SensorUpdateData;
+import telran.probes.dto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,26 +21,18 @@ import telran.probes.dto.SensorUpdateData;
 public class RangeProviderClientServiceImpl implements RangeProviderClientService {
 	final RestTemplate restTemplate;
 	final ServiceConfiguration serviceConfiguration;
-	private final Map<Long, Range> mapRanges = new HashMap<>();
-	private static final Range RANGE_DEFAULT = new Range(MIN_DEFAULT_VALUE, MAX_DEFAULT_VALUE);
-
-	@Bean
-	Consumer<SensorUpdateData> updateRangeConsumer() {
-		return sensorUpdateData -> updateProcessing(sensorUpdateData);
-	}
+	HashMap<Long, Range> cache = new HashMap<>();
 
 	@Override
 	public Range getRange(long sensorId) {
-		Range range = mapRanges.get(sensorId);
-		if (range == null) {
-			range = serviceRequest(sensorId);
-			if (range != RANGE_DEFAULT) {
-				mapRanges.put(sensorId, range);
-			}
-
+		Range res = cache.get(sensorId);
+		if(res == null) {
+			log.debug("range for sensor with id {}  doesn't exist in cache", sensorId);
+			res = serviceRequest(sensorId);
+		} else {
+			log.debug("range {} from cache", res);
 		}
-
-		return range;
+		return res;
 	}
 
 	private Range serviceRequest(long sensorId) {
@@ -48,15 +40,15 @@ public class RangeProviderClientServiceImpl implements RangeProviderClientServic
 		ResponseEntity<?> responseEntity;
 		try {
 			responseEntity = restTemplate.exchange(getUrl(sensorId), HttpMethod.GET, null, Range.class);
-			if (responseEntity.getStatusCode().is4xxClientError()
-					|| responseEntity.getStatusCode().is5xxServerError()) {
+			if (responseEntity.getStatusCode().is4xxClientError()) {
 				throw new Exception(responseEntity.getBody().toString());
 			}
 			range = (Range) responseEntity.getBody();
 			log.debug("range value {}", range);
+			cache.put(sensorId, range);
 		} catch (Exception e) {
 			log.error("error at service request: {}", e.getMessage());
-			range = RANGE_DEFAULT;
+			range = new Range(MIN_DEFAULT_VALUE, MAX_DEFAULT_VALUE);
 			log.warn("default range value: {}", range);
 		}
 		return range;
@@ -70,9 +62,16 @@ public class RangeProviderClientServiceImpl implements RangeProviderClientServic
 		return url;
 	}
 
-	public void updateProcessing(SensorUpdateData sensorUpdateData) {
-		if (sensorUpdateData.range() != null) {
-			mapRanges.replace(sensorUpdateData.id(), sensorUpdateData.range());
+	@Bean
+	Consumer<SensorUpdateData> updateRangeConsumer() {
+		return this::updateProcessing;
+	}
+
+	void updateProcessing(SensorUpdateData updateData) {
+		long sensorId = updateData.id();
+		Range range = updateData.range();
+		if (cache.containsKey(sensorId) && range != null) {
+			cache.put(sensorId, range);
 		}
 	}
 
