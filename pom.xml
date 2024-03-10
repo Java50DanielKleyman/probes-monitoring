@@ -98,5 +98,6 @@
 		<module>avg-populator</module>
 		<module>email-notifier</module>
 		<module>avg-reducer</module>
+		<module>probes</module>
 	</modules>
 </project>
