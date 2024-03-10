@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,9 +20,12 @@ import telran.probes.service.ProbesService;
 @Slf4j
 public class ProbesAppl {
 	private final ProbesService probesService;
+	private final static long TIMEOUT = 10000;
 
-	public static void main(String[] args) {
-		SpringApplication.run(ProbesAppl.class, args);
+	public static void main(String[] args) throws InterruptedException {
+		ConfigurableApplicationContext ctx = SpringApplication.run(ProbesAppl.class, args);
+		Thread.sleep(TIMEOUT);
+		ctx.close();
 
 	}
 
@@ -37,7 +41,7 @@ public class ProbesAppl {
 
 	private ProbeData getProbeData() {
 		ProbeData probeData = probesService.getRandomProbeData();
-		 log.info("Generated ProbeData: {}", probeData);
+		log.info("Generated ProbeData: {}", probeData);
 		return probeData;
 	}
 
