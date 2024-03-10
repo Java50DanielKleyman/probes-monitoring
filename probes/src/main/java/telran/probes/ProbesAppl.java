@@ -40,8 +40,7 @@ public class ProbesAppl {
 	}
 
 	private ProbeData getProbeData() {
-		ProbeData probeData = probesService.getRandomProbeData();
-		log.info("Generated ProbeData: {}", probeData);
+		ProbeData probeData = probesService.getRandomProbeData();		
 		return probeData;
 	}
 
