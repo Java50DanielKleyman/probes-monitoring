@@ -36,8 +36,9 @@ public class ProbesAppl {
 	}
 
 	private ProbeData getProbeData() {
-		// TODO Auto-generated method stub
-		return null;
+		ProbeData probeData = probesService.getRandomProbeData();
+		 log.info("Generated ProbeData: {}", probeData);
+		return probeData;
 	}
 
 }
