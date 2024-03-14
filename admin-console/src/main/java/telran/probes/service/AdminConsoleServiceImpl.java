@@ -25,7 +25,7 @@ final MongoTemplate mongoTemplate;
 final StreamBridge streamBridge;
 String collectionNameRanges = "sensor_ranges";
 String collectionNameMails = "sensor_emails";
-@Value("${app.update.data.binding.name}")
+//@Value("${app.update.data.binding.name}")
 String bindingName;
 FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true).upsert(false);
 	@Override
@@ -72,8 +72,8 @@ FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true).upsert
 		}
 		log.debug("new range for sensor {} is {}", sensorId, range);
 		SensorUpdateData updateData = new SensorUpdateData(sensorId, range, null);
-		streamBridge.send(bindingName, updateData);
-		log.debug("update data {} have been sent to binding name {}", updateData, bindingName);
+//		streamBridge.send(bindingName, updateData);
+//		log.debug("update data {} have been sent to binding name {}", updateData, bindingName);
 		return sensorRange;
 	}
 
@@ -91,8 +91,8 @@ FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true).upsert
 		}
 		log.debug("new remails for sensor {} is {}", sensorId, emails);
 		SensorUpdateData updateData = new SensorUpdateData(sensorId, null, emails);
-		streamBridge.send(bindingName, updateData);
-		log.debug("update data {} have been sent to binding name {}", updateData, bindingName);
+//		streamBridge.send(bindingName, updateData);
+//		log.debug("update data {} have been sent to binding name {}", updateData, bindingName);
 		return sensorEmails;
 	}
 
