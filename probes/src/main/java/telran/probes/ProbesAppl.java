@@ -30,7 +30,7 @@ public class ProbesAppl {
 	}
 
 	@Bean
-	@Scheduled(fixedRate = 1000)
+//	@Scheduled(fixedRate = 1000)
 	Supplier<ProbeData> probesSupplier() {
 		return this::probeGeneration;
 	}
