@@ -14,7 +14,7 @@ import telran.probes.service.AccountProviderService;
 public class AccountProviderController {
 	AccountProviderService service;
 
-	@GetMapping("${app.account.provider.url}" + "/email}")
+	@GetMapping("${app.account.provider.url}" + "/{email}")
 	AccountDto getAccount(@PathVariable(name = "email") String email) {
 		AccountDto res = service.getAccount(email);
 		log.debug("account received is {}", res);
